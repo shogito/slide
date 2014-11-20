@@ -1,0 +1,958 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>reveal.js - The HTML Presentation Framework</title>
+
+		<meta name="description" content="A framework for easily creating beautiful presentations using HTML">
+		<meta name="author" content="Hakim El Hattab">
+
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+		<meta name="viewport" content="=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/default.css" id="theme">
+
+		<!-- For syntax highlighting -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- If the query includes 'print-pdf', include the PDF print sheet -->
+		<script>
+			if( window.location.search.match( /print-pdf/gi ) ) {
+				var link = document.createElement( 'link' );
+				link.rel = 'stylesheet';
+				link.type = 'text/css';
+				link.href = 'css/print/pdf.css';
+				document.getElementsByTagName( 'head' )[0].appendChild( link );
+			}
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+			  <section data-markdown data-separator="^\n---$" data-vertical="^\n>>>$">
+			    <script type="text/template">
+# Docker
+## Infrastructure for App
+Any App, Anywhere
+
+---
+
+### Introduction
+
+>>>
+
+Who Am I？
+
+>>>
+
+* 業務歴
+    * 社内向けシステムのAIXとOracleの運用業務を6年弱
+    * JP1/NNM, JP1/Base, JP1/IM、 JP1/AJSの構築、運用もやりつつ
+    * ときどき構築
+
+>>>
+
+好きなEditorはvi。でも最近Sublime Text3が熱いです
+
+>>>
+
+#### コマーシャル
+最近Google Cloud Platformで$800分の体験チケットを配ってるのでクラウドとか興味のある方はどうぞ
+
+https://cloud.google.com/developers/starterpack/
+
+
+
+---
+
+
+Q. Dockerって聴いた事あります？
+
+>>>
+
+こういうやつ
+
+![dockerとは](./img/docker.png)
+
+>>>
+
+### What is Docker?
+Docker is an open platform for developers and sysadmins to build, ship, and run distributed applications. Consisting of Docker Engine, a portable, lightweight runtime and packaging tool, and Docker Hub, a cloud service for sharing applications and automating workflows, Docker enables apps to be quickly assembled from components and eliminates the friction between development, QA, and production environments. As a result, IT can ship faster and run the same app, unchanged, on laptops, data center VMs, and any cloud.
+
+Solomon Hykes, Docker’s Founder & CTO, gives an overview of Docker in this short video.
+https://www.docker.com/whatisdocker/
+
+>>>
+
+### なんなのそれは？
+
+>>>
+
+PaaS事業を展開していたdotCloudってところがPaaSサービスの基盤として開発した実行環境のパッケージングツール
+
+>>>
+
+### PaaS?
+* <p class="fragment">P: platform</p>
+* <p class="fragment">a: as</p>
+* <p class="fragment">a: a</p>
+* <p class="fragment">S: Service</p>
+
+>>>
+
+### 無茶ぶりに
+開発者「Webアプリ作ったけどインフラ触りたくないからコードだけ渡すので動くようになんとかしてー！」
+
+>>>
+
+### 答える
+PaaS事業者「ウッス」
+
+>>>
+
+主なPaaS事業者
+
+* heroku
+* Google App Engine
+* Windows Azure
+
+...etc
+
+>>>
+
+PaaSに要求される機能
+
+* スケールアウト容易性
+* 高可用性
+* 多様な言語実行環境(Web App Framework)への対応
+* APPと各コンポーネントとの自律的な協調制御
+
+>>>
+
+PaaSサービスへの(個人的な脳内)デプロイイメージ
+
+![deployイメージ](./img/deploy_desc.png)
+
+>>>
+
+起こりえる悲劇
+
+>>>
+
+開発者「なにもおかしな事してないのですが、アプリをデプロイしたらなんか動かないんだけど・・・」
+
+>>>
+
+PaaS事業者「あ、お宅の開発環境とRubyのバージョンちゃいますね」
+
+>>>
+
+自己責任な環境構築
+```
+# 一般的なrubyのインストールコマンド
+$ sudo yum install -y ruby
+# -> その時点での最新が入るのでどのバージョンが入るか分からない
+
+```
+
+>>>
+
+開発者A「あのプラグインとこのプラグインとあのプラグインを使いたいからあれは最新でこれは一個前のバージョンでこれとあれはそのうんぬん・・・・・・」
+
+開発者B「おやおやぁ？このプラグイン使うのにOSパッケージインストールしないとダメっすねぇとなるとCentOS7だとダメなのでCentOSろくうんぬん・・・・」
+
+>>>
+
+PaaS事業者「オッス・・・。」
+
+
+>>>
+
+解決策
+
+>>>
+
+PaaS事業者「めんどくさいから実行環境ごと送ってこいや！！！！」
+
+>>>
+
+Dockerによる依存関係も引き連れてのデプロイ
+
+![docker_deployイメージ](./img/docker_deploy.png)
+
+>>>
+
+PaaS事業者「動くもん送ってくれりゃ面倒見るよ」
+
+>>>
+
+そんな生い立ちで生まれたDokcerですが、将来性を感じたdotCloud社はDokcerに社名を変え、PaaS事業はどっかに売却。Dockerプロジェクトの運営を本業としはじめるのでした
+
+---
+
+Dockerをとりまく状況
+
+>>>
+
+Web系のITインフラ界隈では、いろんなプレイヤー巻き込んでにわかにBuzzってます。
+
+>>>
+
+### 昨今のDocker周りのTopics
+* <p class="fragment">6月10日 Dockerの正式版(1.0)リリース</p>
+* <p class="fragment">7月11日 Microsoft、Red Hat、IBM、Docker、Mesosphere、CoreOS、SaltStackの各社はGoogleが開発したDockerコンテナのオープンソース管理ツール、Kubernetes　プロジェクトに対する支持を発表した。</p>
+* <p class="fragment">10月16日　マイクロソフトがDockerと提携、次期Windows ServerでDockerを採用と発表。Microsoft AzureではDocker Hubとの統合も</p>
+* <p class="fragment">11月4日 Google、Dockerコンテナ管理サービスを発表。「Google Container Engine」は現在α版</p>
+* <p class="fragment">11月17日 AWS、Dockerコンテナ管理サービス「Amazon EC2 Container Service」などをリリース</p>
+* <p class="fragment">11月18日 Red Hat、Docker専用の軽量OS「Red Hat Enterprise Linux 7 Atomic Host」ベータ版をリリース。Kubernetesを統合</p>
+
+>>>
+
+え、6月10日リリースって！！！そんなに新しくて大丈夫なの？
+
+>>>
+
+あわてるなかれ
+
+>>>
+
+Google大先生の偉大なお言葉お借り致します。
+
+>>>
+
+「すでにGoogleは全部のソフトウェアをコンテナに乗せており、毎週20億個ものコンテナを起動している」
+
+http://www.publickey1.jp/blog/14/google20.html
+
+>>>
+
+すばらしい・・・何たる貫禄。
+
+>>>
+
+ま、2014年5月26日なんで、Dockerではないけどね。
+
+---
+
+### Dockerの適用範囲
+
+>>>
+
+かといってDockerは銀の矢でもなければレーザー銃でもないので用法容量を守って正しく使用することが必要です。
+
+>>>
+
+そもそもなんではやったか？
+
+>>>
+
+Webアプリケーションインフラのコンポーネントおさらい
+
+* フロントエンド
+* 負荷分散
+* session管理/動的コンテンツキャッシュ
+* Webサーバ
+* Webアプリケーションサーバ
+* データベース
+
+>>>
+
+こんなかんじ
+
+![webappアーキテクチャイメージ](./img/webapp.png)
+
+
+>>>
+
+Webインフラのプロビジョニングを考える上で大事な事
+
+
+* Web App層はスケールアウトしやすい
+    * Web App層はステートレスな構成にさえしていればスケールアウトで性能向上が比較的容易
+* Web DB層はスケールアウトしにくい
+    * 単純にI/O、CPUがボトルネックで、基本的にCPU処理も並列処理に最適化されてない
+
+>>>
+
+### 設備投資のジレンマ
+* <p class="fragment">出来るだけお金かけたくない</p>
+* <p class="fragment">でも買った後にピーク処理にスペックが足りなかったら困る</p>
+* <p class="fragment">そもそも実際どれくらいの負荷かかるかサービスインしてみるまで予想できないよね・・・</p>
+* <p class="fragment">よし一番高いの買っちゃえ・・・！</p>
+* <p class="fragment">いやぁ、でも、常にピークパワーが必要じゃないから無駄になるしなぁ</p>
+* <p class="fragment">あれ、CPUをワンランク上げるよりも、ワンランク下のCPUで2台買った方が安いんじゃないか・・・？</p>
+* <p class="fragment">だったらはじめからスケールアウト前提にした方が費用対効果がいいじゃん！</p>
+
+>>>
+
+### ソリューション
+* ハイエンドモデルでなくコスパの良いモデルを何台か買う
+* マシンをまとめてグループ化する
+* 実行環境を作ってアプリケーションをデプロイ
+* 物理的にどこのマシンにデプロイされるかは気にしない
+* 処理ピークになりそうだったら実行環境を増やしてスケールアウト
+* 要らなくなったら実行環境破棄してリソースを返却
+* 部署間/組織間で環境を共有
+* コンピュータグループ全体のリソースが不足していたら(予算があれば)マシンを追加する
+
+>>>
+
+いわゆるプライベートクラウドだったりIaaSです
+
+
+>>>
+
+### プロビジョニングするためにIaaSで起こる事
+1. 手動/自動化によりスケールアウトの必要性を察知
+1. Jenkins等のCIツールからAPIやCLIを通じて、VMIベースにOS環境を起動
+1. 立ち上がったOSでChefやPuppetやAnsible、スーパーエンジニアお手製の環境構成スクリプトが流れる
+1. スクリプト内でGit等のリポジトリからプログラムや必要なファイルを取得しサービス起動
+1. サービス起動テスト等をJenkinsが流す
+1. ロードバランサに新しいインスタンスの情報が追加されサービスイン
+1. 要らなくなったらインスタンスを破棄する
+
+>>>
+
+これらを必要に応じて実施します
+
+>>>
+
+ウゲーッ！って量の作業ですが、熟達ハッカーのターミナル力、AWS/Jenkins/Chef等と各種オーケストレーションツール連動によって実現されているっぽいです
+
+>>>
+
+ただしこの場合、プロビジョニングはVM単位で実施されるため無駄が多い
+
+* メモリは食われる
+* 仮想化にCPUリソースもってかれる
+* HDDも食う
+* プライベートクラウドであればその分の設備投資が必要
+* IaaSなどの従量課金であればお金かかる
+
+>>>
+
+
+そんな状況で、Dockerというコンテナ技術に日が当たるわけです
+
+---
+
+
+### Dockerの技術レイヤーの話
+
+>>>
+
+コンテナ技術は軽量仮想マシンも呼ばれる技術で、ホスト上に仮想ホスト環境を構築します。
+
+>>>
+
+仮想化の代表的プロダクト
+
+* VM Ware
+* Xen
+* KVM
+* Virtual Box
+* Hyper V
+
+...etc
+
+>>>
+
+これらとの違いは、ハードウェアをソフトウェア的にエミュレート__<span style="color: #ffa899">しない</span>__という点。
+
+>>>
+
+### 改めてH/W仮想化のアレなとこ
+* エミュレートされたハードウェアの上にさらにOSをインストールするため、ディスクやメモリの消費が多い
+* 仮想化にCPUリソースを持ってかれる
+* 仮想環境構成後にOSの起動シーケンスが必要なので立ち上がりが遅い
+* ハードウェアをエミュレートしているのでオーバーヘッドがある
+
+>>>
+
+仮想化支援だったり、ハードウェア性能の向上で十分早いと感じますが、スケールアウトどーん！で1000台とか立ち上げたらチリも積もればですね
+
+>>>
+
+それじゃどうするか？
+
+>>>
+
+コンテナ技術ではホストから名前空間を隔離し、仮想ホスト内で再割当します
+
+* ファイルシステム
+* ネットワーク
+* プロセスツリー
+* ユーザ
+* ホスト名
+
+>>>
+
+* ファイルシステムはホストから隔離された「/」をルートにもつ
+* 仮想ブリッジの下にぶら下げられて172.17.xxx.xxxというプライベートなIPを割り当てられる
+* プロセスツリーもホストから隔離され、0番から再度採番される
+* ユーザ/グループも隔離され、仮想ホスト内で独自管理される
+* ホスト名も適当に振られる
+
+
+>>>
+
+論理的なリソースを隔離した上で、プロセスはカーネルを通じてホストのリソースやハードウェアリソースを利用します
+
+>>>
+
+なのでLinuxにWindowsのっけて動かしてみるとか言う器用な事は__<span style="color: #ffa899">原則</span>__できません。
+
+>>>
+
+もっと知りたい人はぶっちゃけここ見てください
+
+「Dockerを支える技術」
+
+* http://www.slideshare.net/enakai/docker-34668707
+
+>>>
+
+そんなわけで
+
+>>>
+
+### コンテナのメリット
+* コンテナ技術ではハードウェアのエミュレーションを行わないためパフォーマンス劣化が少ない
+* H/Wのエミュレーションを行わないためメモリ使用量が少ない
+* CPUの仮想化支援機能が不要であるため、仮想化されたVM上でも動作する
+* 新しい環境を立ち上げる際も必要プロセスが上がるだけなので起動が早い
+
+>>>
+
+となるとどうなるか
+
+>>>
+
+物理マシンが仮想マシンを動かす為のインフラになったように、仮想マシンがコンテナを動かす為のインフラになります
+
+>>>
+
+モダンなインフラ
+
+![docker_deployイメージ](./img/cloud.png)
+
+>>>
+
+さらに細かく
+
+![docker_deployイメージ](./img/dock_paas.png)
+
+
+>>>
+
+### プロビジョニングの単位
+
+物理マシン > 仮想マシン > ” __<span style="color: #ffa899">コンテナ</span>__ ” > プロセス
+
+>>>
+
+ちなみにこんな事も
+
+![docker_deployイメージ](./img/potability.png)
+
+>>>
+
+※ DBはなんとかしよう
+
+---
+
+### Docker プラットフォーム構成する要素
+
+>>>
+
+Dockerの特徴
+
+* 実行環境のパッケージング
+* パッケージの実行
+* パッケージの世代管理
+* 統合されたリポジトリ連携
+
+>>>
+
+ざっくり言えば、Dockerはコンテナ技術とGitとGitHubを合わせたようなモノです。それかyum。
+
+>>>
+
+Dockerは、環境を隔離して実行する為のDocker Engineのみをさす訳でなく、Docker Hubという、エコシステムを支えるサービスも含めたプロジェクトです。
+LXC等の同様のコンテナ技術との差異はそこにあります。
+
+>>>
+
+コンテナのEngineだけでは例の様なインフラは構築できません。パッケージングとパッケージされたイメージの共有ができて初めて実現可能です。
+
+>>>
+
+### つまり
+
+>>>
+
+Docker Hub めっちゃ cool
+
+![docker_deployイメージ](./img/docker_hub.png)
+
+>>>
+
+Docker Hubにはバナーにあるようなメジャープロダクトや、ユーザや企業がuploadした構築済み環境のDockerイメージが登録されています
+
+>>>
+
+開発者やシステム管理者、その環境を必要としている何れかのユーザは、コマンド一発で自分の環境にコピーする事が出来ます
+
+
+
+>>>
+
+Docker Hubからmysqlの環境をさがしてみる
+```
+$ docker search mysql
+```
+
+>>>
+
+Docker Hubのmysqlイメージを実行してみる
+```
+$ docker run -e MYSQL_ROOT_PASSWORD=mysecretpassword -d mysql
+```
+
+>>>
+
+#### 例のdocker runの動作
+1. mysqlという名前のイメージをローカルで探索
+1. mysqlという名前のイメージがなければ外部リポジトリを探索(デフォはDocker Hub)
+1. イメージが存在すればローカルに保存される(docker pull)
+1. イメージからコンテナが起動
+1. -eで指定された環境変数が設定されてmysqlのパスワードに埋め込まれる
+1. コンテナ内でmysqldが起動し使用可能になる
+
+>>>
+
+DEMOできるならDEMOりたい
+
+---
+
+### Dockerをつかってみる
+
+>>>
+
+### 前提動作環境
+とりあえずLinuxカーネル上でLinuxしか動きません
+
+* ubuntu
+* RHEL
+* CentOS
+* CoreOS
+
+...etc
+
+>>>
+
+* 次期Windows Serverは対応してくるっぽい
+* OS Xでも動くよって言ってるけどいろいろずるい
+
+
+>>>
+
+### 対話型インターフェイス
+とりあえずGUIはないのでCLIでがんばってください
+
+>>>
+
+### Dockerのインストール
+ここみてがんばる
+
+* http://docs.docker.com/installation/
+
+>>>
+
+CentOS 7は公式サポート始めたようなのでyum一発っぽい。
+
+```
+$ sudo yum install docker
+$ service docker start
+```
+
+>>>
+
+dockerコマンドでバージョンが表示されればOK
+
+```
+$ sudo docker -v
+Docker version 1.2.0, build fa7b24f/1.2.0
+
+```
+
+>>>
+
+### Baseイメージ
+
+* Dockerイメージは全てBaseイメージからの差分になる
+* 基本的にDocker Hubのcentosやubuntuを利用する
+
+```
+# とりあえずlatestバージョンのコンテナを起動してみる
+$ sudo docker run -i -d ubuntu /bin/bash
+$ sudo docker run -i -d centos /bin/bash
+```
+
+* イメージはタグによってバージョン管理もできる
+
+```
+# バージョン指定でコンテナを起動してみる
+$ sudo docker run -i -d ubuntu:12 /bin/bash
+$ sudo docker run -i -d centos:6 /bin/bash
+```
+
+
+>>>
+
+* 起動したコンテナはdocker psで確認できる
+
+```
+$ sudo docker ps  
+CONTAINER ID IMAGE          COMMAND     CREATED       STATUS       PORTS NAMES
+3b4fed58c424 ubuntu:latest  "/bin/bash" 3 minutes ago Up 3 minutes       thirsty_nobel          
+fe5bddd73829 centos:centos6 "/bin/bash" 4 minutes ago Up 4 minutes       backstabbing_meitner   
+d2444e69bdc1 centos:centos7 "/bin/bash" 4 minutes ago Up 4 minutes       hungry_darwin8         
+f1b528f9d102 centos:centos7 "/bin/bash" 6 minutes ago Up 6 minutes       thirsty_pare           
+```
+
+>>>
+
+イメージの作り方
+
+>>>
+
+イメージの作り方は二通り
+
+>>>
+
+#### 1.コンテナからイメージを作る
+1. <p class="fragment">Baseイメージからコンテナを起動</p>
+1. <p class="fragment">コンテナにssh等で接続してpkgインストール等の変更作業</p>
+1. <p class="fragment">コンテナに対して「docker commit」コマンドを実行</p>
+1. <p class="fragment">新しいDockerイメージが作成される</p>
+
+
+## <p class="fragment">でもおすすめできない</p>
+
+>>>
+
+基本的にそのコンテナを誰か利用する事を考え、操作を明示する必要がある
+
+>>>
+
+
+#### 2.Dockerfileからイメージを作る
+1. <p class="fragment">Dockerfileというイメージ自動構築用の定義ファイルを作る</p>
+1. <p class="fragment">Dockerfileの存在するディレクトリで「docker build」コマンドを実行</p>
+1. <p class="fragment">新しいDockerイメージが作成される</p>
+
+>>>
+
+### DockerfileからImageをbuildしてみる
+
+* Dockerfileの例
+
+```
+FROM centos:6
+
+RUN useradd test
+RUN yum update -y
+RUN yum install -y httpd
+
+ENV PATH $PATH:/usr/sbin
+
+WORKDIR /usr/local/httpd
+
+COPY ./index.html /var/www/html/index.html
+
+EXPOSE 80
+CMD ["apachectl","-DFOREGROUND"]
+
+```
+
+>>>
+
+Inteructionの一例
+
+* __<span style="color: #ffa899">RUN</span>__ はbuild時に実行されるOSコマンドを記述できます。これによって環境整備を行います。
+* __<span style="color: #ffa899">ENV</span>__ はイメージがコンテとして動作した際の環境変数を定義します。
+* __<span style="color: #ffa899">EXPOSE</span>__ はイメージがコンテナとして動作したときにホストに公開するポート番号を指定します。
+* __<span style="color: #ffa899">COPY</span>__ はbuild時に指定したファイルをイメージの中に配置します。
+* __<span style="color: #ffa899">ADD</span>__ も同様にファイルを設置できますが、外部URLからコピーできたりtarを展開して配置したりと動作が異なります。
+* __<span style="color: #ffa899">CMD</span>__ イメージがコンテナとして動作した際のデフォルトの実行コマンドを指定します。Dockerコンテナはフォアグラウンドで動作するプロセスが存在しないと終了してしまうので注意。
+
+>>>
+
+COPY用にDockerfileと同一ディレクトリにindex.htmlを置いときます
+
+```
+<html>
+<body>
+hello Docker
+</body>
+</html>
+```
+
+>>>
+
+buildしてみる
+
+```
+$ sudo docker build -t oreore/apache .
+```
+
+>>>
+
+buildログ
+
+```
+Step 0 : FROM centos:6
+ ---> 68edf809afe7
+Step 1 : RUN useradd test
+ ---> Using cache
+ ---> f22e5a9e095a
+Step 2 : RUN yum update -y
+ ---> Using cache
+ ---> fb7467ba9aa8
+Step 3 : RUN yum install -y httpd
+ ---> Using cache
+ ---> 9591d1b91ff2
+Step 4 : ENV PATH $PATH:/usr/sbin
+ ---> Using cache
+ ---> 91339baf4e34
+Step 5 : WORKDIR /usr/local/httpd
+ ---> Using cache
+ ---> 6806159c16e7
+Step 6 : COPY ./index.html /var/www/html/index.html
+ ---> 13a029981e8b
+Removing intermediate container 843905145bd5
+Step 7 : EXPOSE 80
+ ---> Running in dc7546310f0a
+ ---> c499f1062f84
+Removing intermediate container dc7546310f0a
+Step 8 : CMD ["apachectl","-DFOREGROUND"]
+ ---> Running in 3eca3c1ce34e
+ ---> 51588ded1313
+Removing intermediate container 3eca3c1ce34e
+Successfully built 51588ded1313
+
+```
+
+>>>
+
+イメージが出来てる
+```
+$ sudo docker images
+
+REPOSITORY                       TAG                     IMAGE ID            CREATED             VIRTUAL SIZE
+oreore/apache                    latest                  51588ded1313        32 seconds ago      520.4 MB
+
+```
+
+>>>
+
+イメージからコンテナ動かしてみる
+
+```
+# -pでコンテナの80番ポートとローカルホストの10080をマッピングする
+$ sudo docker run -d -p 10080:80 oreore/apache
+19003f75e1454fcadfbba57e557e473ecd9622405ffdd2706c08226da171eb52
+
+```
+
+>>>
+
+10080ポートでapacheが上がってるのでHTTPリクエスト投げてみる
+```
+$ curl localhost:10080
+
+<html>
+<body>
+hello Docker
+</body>
+</html>
+
+```
+
+>>>
+
+もっといっぱい動かしてみる
+
+```
+$ sudo docker run -d -p 10081:80 oreore/apache
+$ sudo docker run -d -p 10082:80 oreore/apache
+$ sudo docker run -d -p 10083:80 oreore/apache
+$ sudo docker run -d -p 10084:80 oreore/apache
+$ sudo docker run -d -p 10085:80 oreore/apache
+```
+
+```
+$ curl localhost:10081
+<html>
+<body>
+hello Docker
+</body>
+</html>
+$ curl localhost:10082
+<html>
+<body>
+hello Docker
+</body>
+</html>
+$ curl localhost:10083
+<html>
+<body>
+hello Docker
+</body>
+</html>
+$ curl localhost:10084
+<html>
+<body>
+hello Docker
+</body>
+</html>
+$ curl localhost:10085
+<html>
+<body>
+hello Docker
+</body>
+</html>
+
+```
+
+>>>
+
+いっぱい上がってる
+
+![dockerps](./img/dockerps.png)
+
+---
+
+まとめとか所感
+
+>>>
+
+### 雑にまとめ
+* Dockerは実行環境を閉じ込めてコンポーネント化できる
+* パッケージングされた環境はどこでも同一である事が保証される
+* 環境
+    * 環境変数
+    * アプリケーション(バイナリ/コード)
+    * 言語実行環境
+    * OS/ミドルの前提パッケージ
+    * ユーザ
+    * パーミション
+    * 設定ファイルやスクリプト
+    * 内部的なポート番号
+* 保証されないもの
+    * IPアドレス
+    * ホスト名
+    * 物理的なロケーション
+    * マシンスペック
+    * 他のコンテナの状態(DBとか)
+
+>>>
+
+### 所感
+
+* 環境の作成破棄がお手軽
+* 手順書作成や検証の為に何回もインストール！とか(少しは)やってもいい気になる
+* 新しいプロダクトでもDockerイメージ提供されていればとりあえず試せる
+* Docker Hub便利
+* Dockefileのおかげで何してるか明白
+* どこでも動作保証してくれるのでベンダーロックインされにくい
+* ステートフルな環境を格好良く設計できればさらに夢は広がる
+* 出たばっかりなので様子見が必要
+* CMD/ENTRYPOINT Instructionを使うと実行ファイルっぽくも使えて便利
+* インストールにインタラクションやGUIを要求されるプロダクトはダメ
+
+>>>
+
+* Dockerコンテナは基本的に実行が終われば状態を破棄してしまうので扱いにコツがいる
+* 状態の永続性はDockerイメージだけ
+* イメージをイチからbuildすると結構時間かかる
+* 公式ベースイメージのcentoはまじでなんも入ってない(sshさえ入ってない)
+* オンプレにしろIaaSにしろアプリにしろ、いつでも破棄できて、いつでも再現できる設計にするのは大事だよね
+* その気になれば雲の向こうでなんでもできちゃうので物理マシンを知るののも大事だよね
+* <p class="fragment">ちなみに今月(12月)のSoftware Designの特集はDockerらしいですよ</p>
+
+---
+
+<section data-background="./img/panda.jpg">
+
+こんなん聴いてる場合じゃねぇ
+
+---
+
+そんな感じで
+
+>>>
+
+## Thank you for listening. 
+
+
+
+
+
+
+			    </script>
+			  </section>
+
+			</div>
+
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.js"></script>
+
+		<script>
+
+			// Full list of configuration options available here:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+
+				theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+				transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/fade/none
+
+				// Parallax scrolling
+				// parallaxBackgroundImage: 'https://s3.amazonaws.com/hakim-static/reveal-js/reveal-parallax-1.jpg',
+				// parallaxBackgroundSize: '2100px 900px',
+
+				// Optional libraries used to extend on reveal.js
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+					{ src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>
